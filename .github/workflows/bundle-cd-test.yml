@@ -65,7 +65,7 @@ jobs:
         with:
           name: DBX_TOKEN
           value: ${{ steps.generate-pat.outputs.pat }}
-          pa_token: ${{ secrets.GITHUB_TOKEN }}
+          pa_token: ${{ secrets.GH_TOKEN }}
           repository: ${{ github.repository }}
           environment: test
       
