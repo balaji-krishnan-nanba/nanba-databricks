@@ -1,6 +1,7 @@
 # Databricks Asset Bundle Configuration
 bundle:
   name: nanba-databricks
+  # Service principal permissions configured - ready for deployment
 
 variables:
   spark_version:
