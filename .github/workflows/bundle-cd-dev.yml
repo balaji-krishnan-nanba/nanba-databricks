@@ -40,9 +40,30 @@ jobs:
               "tenantId": "${{ secrets.ARM_TENANT_ID }}"
             }
       
+      - name: Generate Databricks Token
+        id: databricks-token
+        run: |
+          # Get Azure access token for Databricks resource
+          ACCESS_TOKEN=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --query accessToken -o tsv)
+          
+          # Create PAT using Databricks Token API with Azure authentication
+          PAT_RESPONSE=$(curl -X POST \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -H "X-Databricks-Azure-SP-Management-Token: $ACCESS_TOKEN" \
+            -d '{
+              "lifetime_seconds": 3600,
+              "comment": "GitHub Actions Dev Deployment"
+            }' \
+            https://adb-1591171967825930.10.azuredatabricks.net/api/2.0/token/create)
+          
+          PAT=$(echo $PAT_RESPONSE | jq -r '.token_value')
+          echo "::add-mask::$PAT"
+          echo "token=$PAT" >> $GITHUB_OUTPUT
+      
       - name: Deploy to Dev
         env:
           DATABRICKS_HOST: https://adb-1591171967825930.10.azuredatabricks.net
-          DATABRICKS_AUTH_TYPE: azure-cli
+          DATABRICKS_TOKEN: ${{ steps.databricks-token.outputs.token }}
         run: |
           databricks bundle deploy --target dev
