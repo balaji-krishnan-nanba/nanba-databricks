@@ -2,6 +2,9 @@
 
 Azure Databricks infrastructure with Unity Catalog, CI/CD pipelines, and ELT demo.
 
+## 🟢 Deployment Status
+Service principal DE-DEV-SPN configured with admin access to all workspaces in uksouth_metastore. Ready for end-to-end deployment.
+
 ## 🚀 Quick Start
 
 ### Prerequisites
