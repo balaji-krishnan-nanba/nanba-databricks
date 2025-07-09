@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(az login:*)",
+      "Bash(az group create:*)",
+      "Bash(az databricks workspace create:*)",
+      "Bash(az group delete:*)",
+      "Bash(az databricks workspace list:*)",
+      "Bash(az databricks workspace show:*)",
+      "Bash(az databricks workspace delete:*)",
+      "Bash(pip install:*)",
+      "Bash(az account get-access-token:*)",
+      "Bash(mkdir:*)",
+      "Bash(rm:*)",
+      "Bash(git init:*)",
+      "Bash(chmod:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": []
+  }
+}

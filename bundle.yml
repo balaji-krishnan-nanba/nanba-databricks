@@ -1,0 +1,120 @@
+bundle:
+  name: nanba-databricks
+
+variables:
+  default_cluster_spec: &default_cluster_spec
+    spark_version: "15.4.x-scala2.12"
+    node_type_id: "Standard_DS3_v2"
+    num_workers: 0
+    spark_conf:
+      spark.databricks.cluster.profile: singleNode
+      spark.master: local[*]
+    custom_tags:
+      ResourceClass: SingleNode
+
+workspace:
+  host: ${var.databricks_host}
+
+environments:
+  dev:
+    default: true
+    variables:
+      databricks_host: https://databricks-uksouth-dev.azuredatabricks.net
+      catalog_name: nanba_dev_bronze
+      storage_account: stdlukdev
+      key_vault: kv-dev-dbws
+    
+  test:
+    variables:
+      databricks_host: https://databricks-uksouth-test.azuredatabricks.net
+      catalog_name: nanba_test_silver
+      storage_account: stdluktest
+      key_vault: kv-test-dbws
+    
+  prod:
+    variables:
+      databricks_host: https://databricks-uksouth-prod.azuredatabricks.net
+      catalog_name: nanba_prod_gold
+      storage_account: stdlukprod
+      key_vault: kv-prod-dbws
+
+resources:
+  jobs:
+    elt_demo_job:
+      name: "ELT Demo Pipeline - ${bundle.target}"
+      description: "Nightly ELT pipeline for Bronze → Silver → Gold transformation"
+      
+      schedule:
+        quartz_cron_expression: "0 0 2 * * ?"  # 02:00 UTC daily
+        timezone_id: "UTC"
+        pause_status: UNPAUSED
+      
+      email_notifications:
+        on_failure:
+          - balaji.krishnan@nanba.com
+      
+      timeout_seconds: 3600  # 1 hour timeout
+      max_concurrent_runs: 1
+      
+      job_clusters:
+        - job_cluster_key: elt_cluster
+          new_cluster:
+            <<: *default_cluster_spec
+            cluster_name: "elt-demo-cluster-${bundle.target}"
+            data_security_mode: SINGLE_USER
+            single_user_name: ${workspace.current_user.userName}
+      
+      tasks:
+        - task_key: bootstrap_unity_catalog
+          description: "Initialize Unity Catalog structures"
+          job_cluster_key: elt_cluster
+          notebook_task:
+            notebook_path: /Workspace/${workspace.file_path}/src/notebooks/bootstrap_uc.py
+            base_parameters:
+              environment: ${bundle.target}
+          timeout_seconds: 600
+          
+        - task_key: run_elt_pipeline
+          description: "Execute ELT transformation pipeline"
+          depends_on:
+            - task_key: bootstrap_unity_catalog
+          job_cluster_key: elt_cluster
+          notebook_task:
+            notebook_path: /Workspace/${workspace.file_path}/src/notebooks/elt_demo.py
+            base_parameters:
+              environment: ${bundle.target}
+          timeout_seconds: 1800
+      
+      run_as:
+        user_name: ${workspace.current_user.userName}
+
+  clusters:
+    interactive_cluster:
+      cluster_name: "Interactive Cluster - ${bundle.target}"
+      description: "Shared interactive cluster for development"
+      <<: *default_cluster_spec
+      autotermination_minutes: 120
+      data_security_mode: SINGLE_USER
+      single_user_name: ${workspace.current_user.userName}
+
+targets:
+  dev:
+    mode: development
+    compute_id: interactive_cluster
+    
+  test:
+    mode: staging
+    presets:
+      name_prefix: "[TEST] "
+      trigger_pause_status: PAUSED
+    
+  prod:
+    mode: production
+    presets:
+      name_prefix: "[PROD] "
+      trigger_pause_status: UNPAUSED
+    permissions:
+      - level: CAN_VIEW
+        group_name: users
+      - level: CAN_MANAGE
+        user_name: balaji.krishnan@nanba.com
