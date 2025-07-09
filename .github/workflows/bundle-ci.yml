@@ -1,0 +1,45 @@
+name: Bundle CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'bundle.yml'
+      - '.github/workflows/bundle-ci.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install Databricks CLI
+        run: |
+          pip install databricks-cli
+      
+      - name: Lint Python notebooks
+        run: |
+          pip install ruff
+          ruff check src/notebooks/
+      
+      - name: Run unit tests
+        run: |
+          pip install pytest pytest-cov
+          # Placeholder for actual tests
+          echo "Unit tests would run here"
+      
+      - name: Validate Databricks Asset Bundle
+        env:
+          DATABRICKS_HOST: https://databricks-uksouth-dev.azuredatabricks.net
+          DATABRICKS_TOKEN: ${{ secrets.DBX_TOKEN }}
+        run: |
+          databricks bundle validate
