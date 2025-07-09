@@ -74,9 +74,5 @@ jobs:
         env:
           DATABRICKS_HOST: https://adb-3093184951454180.0.azuredatabricks.net
           DATABRICKS_TOKEN: ${{ steps.generate-pat.outputs.pat }}
-          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
         run: |
           databricks bundle deploy --target prod
