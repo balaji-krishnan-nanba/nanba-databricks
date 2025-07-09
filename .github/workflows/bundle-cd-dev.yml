@@ -40,48 +40,15 @@ jobs:
               "tenantId": "${{ secrets.ARM_TENANT_ID }}"
             }
       
-      - name: Generate Databricks PAT
-        id: generate-pat
+      - name: Configure Databricks Auth
         run: |
-          # Get AAD token
-          AAD_TOKEN=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --query accessToken -o tsv)
-          
-          # Generate Databricks PAT using Token Management API
-          RESPONSE=$(curl -X POST \
-            -H "Authorization: Bearer $AAD_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "application_id": "'${{ secrets.ARM_CLIENT_ID }}'",
-              "lifetime_seconds": 1296000,
-              "comment": "GitHub Actions Dev Deployment"
-            }' \
-            https://adb-1591171967825930.10.azuredatabricks.net/api/2.0/token-management/on-behalf-of/tokens)
-          
-          echo "API Response: $RESPONSE"
-          
-          if echo "$RESPONSE" | jq -e '.token_value' > /dev/null; then
-            PAT=$(echo $RESPONSE | jq -r '.token_value')
-            echo "::add-mask::$PAT"
-            echo "pat=$PAT" >> $GITHUB_OUTPUT
-            echo "PAT generated successfully"
-          else
-            echo "Error: Failed to generate PAT"
-            echo "Response: $RESPONSE"
-            exit 1
-          fi
-      
-      - name: Store PAT in GitHub secret
-        uses: gliech/create-github-secret-action@v1
-        with:
-          name: DBX_TOKEN
-          value: ${{ steps.generate-pat.outputs.pat }}
-          pa_token: ${{ secrets.GH_TOKEN }}
-          repository: ${{ github.repository }}
-          environment: dev
+          echo "Using Azure CLI authentication"
       
       - name: Deploy to Dev
         env:
           DATABRICKS_HOST: https://adb-1591171967825930.10.azuredatabricks.net
-          DATABRICKS_TOKEN: ${{ steps.generate-pat.outputs.pat }}
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
         run: |
           databricks bundle deploy --target dev
