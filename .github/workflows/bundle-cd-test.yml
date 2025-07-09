@@ -54,7 +54,7 @@ jobs:
               "lifetime_seconds": 1296000,
               "comment": "GitHub Actions Test Deployment"
             }' \
-            https://databricks-uksouth-test.azuredatabricks.net/api/2.0/token-management/on-behalf-of/tokens)
+            https://adb-4303682729475323.3.azuredatabricks.net/api/2.0/token-management/on-behalf-of/tokens)
           
           PAT=$(echo $RESPONSE | jq -r '.token_value')
           echo "::add-mask::$PAT"
@@ -71,7 +71,7 @@ jobs:
       
       - name: Deploy to Test
         env:
-          DATABRICKS_HOST: https://databricks-uksouth-test.azuredatabricks.net
+          DATABRICKS_HOST: https://adb-4303682729475323.3.azuredatabricks.net
           DATABRICKS_TOKEN: ${{ steps.generate-pat.outputs.pat }}
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}

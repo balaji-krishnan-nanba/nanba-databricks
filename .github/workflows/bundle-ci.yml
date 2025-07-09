@@ -39,7 +39,7 @@ jobs:
       
       - name: Validate Databricks Asset Bundle
         env:
-          DATABRICKS_HOST: https://databricks-uksouth-dev.azuredatabricks.net
+          DATABRICKS_HOST: https://adb-1591171967825930.10.azuredatabricks.net
           DATABRICKS_TOKEN: ${{ secrets.DBX_TOKEN }}
         run: |
           databricks bundle validate

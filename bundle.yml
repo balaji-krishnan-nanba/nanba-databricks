@@ -19,21 +19,21 @@ environments:
   dev:
     default: true
     variables:
-      databricks_host: https://databricks-uksouth-dev.azuredatabricks.net
+      databricks_host: https://adb-1591171967825930.10.azuredatabricks.net
       catalog_name: nanba_dev_bronze
       storage_account: stdlukdev
       key_vault: kv-dev-dbws
     
   test:
     variables:
-      databricks_host: https://databricks-uksouth-test.azuredatabricks.net
+      databricks_host: https://adb-4303682729475323.3.azuredatabricks.net
       catalog_name: nanba_test_silver
       storage_account: stdluktest
       key_vault: kv-test-dbws
     
   prod:
     variables:
-      databricks_host: https://databricks-uksouth-prod.azuredatabricks.net
+      databricks_host: https://adb-3093184951454180.0.azuredatabricks.net
       catalog_name: nanba_prod_gold
       storage_account: stdlukprod
       key_vault: kv-prod-dbws
