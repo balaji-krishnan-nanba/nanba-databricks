@@ -24,7 +24,8 @@ jobs:
       
       - name: Install Databricks CLI
         run: |
-          pip install databricks-cli
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+          echo "$HOME/.databricks/cli/bin" >> $GITHUB_PATH
       
       - name: Lint Python notebooks
         run: |
