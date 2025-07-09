@@ -1,3 +1,4 @@
+# Databricks Asset Bundle Configuration
 bundle:
   name: nanba-databricks
 
