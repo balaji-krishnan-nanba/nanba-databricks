@@ -57,9 +57,18 @@ jobs:
             }' \
             https://adb-1591171967825930.10.azuredatabricks.net/api/2.0/token-management/on-behalf-of/tokens)
           
-          PAT=$(echo $RESPONSE | jq -r '.token_value')
-          echo "::add-mask::$PAT"
-          echo "pat=$PAT" >> $GITHUB_OUTPUT
+          echo "API Response: $RESPONSE"
+          
+          if echo "$RESPONSE" | jq -e '.token_value' > /dev/null; then
+            PAT=$(echo $RESPONSE | jq -r '.token_value')
+            echo "::add-mask::$PAT"
+            echo "pat=$PAT" >> $GITHUB_OUTPUT
+            echo "PAT generated successfully"
+          else
+            echo "Error: Failed to generate PAT"
+            echo "Response: $RESPONSE"
+            exit 1
+          fi
       
       - name: Store PAT in GitHub secret
         uses: gliech/create-github-secret-action@v1
