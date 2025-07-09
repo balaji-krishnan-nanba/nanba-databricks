@@ -3,15 +3,16 @@ bundle:
   name: nanba-databricks
 
 variables:
-  default_cluster_spec: &default_cluster_spec
-    spark_version: "15.4.x-scala2.12"
-    node_type_id: "Standard_DS3_v2"
-    num_workers: 0
-    spark_conf:
-      spark.databricks.cluster.profile: singleNode
-      spark.master: local[*]
-    custom_tags:
-      ResourceClass: SingleNode
+  spark_version:
+    default: "15.4.x-scala2.12"
+  node_type_id:
+    default: "Standard_DS3_v2"
+  catalog_name:
+    description: "Unity Catalog name for the environment"
+  storage_account:
+    description: "Storage account name for the environment"
+  key_vault:
+    description: "Key vault name for the environment"
 
 targets:
   dev:
@@ -60,7 +61,9 @@ resources:
       job_clusters:
         - job_cluster_key: elt_cluster
           new_cluster:
-            <<: *default_cluster_spec
+            spark_version: ${var.spark_version}
+            node_type_id: ${var.node_type_id}
+            num_workers: 2
             cluster_name: "elt-demo-cluster-${bundle.target}"
             data_security_mode: SINGLE_USER
             single_user_name: ${workspace.current_user.userName}
@@ -70,7 +73,7 @@ resources:
           description: "Initialize Unity Catalog structures"
           job_cluster_key: elt_cluster
           notebook_task:
-            notebook_path: /Workspace/${workspace.file_path}/src/notebooks/bootstrap_uc.py
+            notebook_path: ${workspace.file_path}/src/notebooks/bootstrap_uc.py
             base_parameters:
               environment: ${bundle.target}
           timeout_seconds: 600
@@ -81,7 +84,7 @@ resources:
             - task_key: bootstrap_unity_catalog
           job_cluster_key: elt_cluster
           notebook_task:
-            notebook_path: /Workspace/${workspace.file_path}/src/notebooks/elt_demo.py
+            notebook_path: ${workspace.file_path}/src/notebooks/elt_demo.py
             base_parameters:
               environment: ${bundle.target}
           timeout_seconds: 1800
@@ -92,30 +95,9 @@ resources:
   clusters:
     interactive_cluster:
       cluster_name: "Interactive Cluster - ${bundle.target}"
-      description: "Shared interactive cluster for development"
-      <<: *default_cluster_spec
+      spark_version: ${var.spark_version}
+      node_type_id: ${var.node_type_id}
+      num_workers: 2
       autotermination_minutes: 120
       data_security_mode: SINGLE_USER
       single_user_name: ${workspace.current_user.userName}
-
-targets:
-  dev:
-    mode: development
-    compute_id: interactive_cluster
-    
-  test:
-    mode: staging
-    presets:
-      name_prefix: "[TEST] "
-      trigger_pause_status: PAUSED
-    
-  prod:
-    mode: production
-    presets:
-      name_prefix: "[PROD] "
-      trigger_pause_status: UNPAUSED
-    permissions:
-      - level: CAN_VIEW
-        group_name: users
-      - level: CAN_MANAGE
-        user_name: balaji.krishnan@nanba.com

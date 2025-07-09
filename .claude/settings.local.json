@@ -15,7 +15,12 @@
       "Bash(git init:*)",
       "Bash(chmod:*)",
       "Bash(git checkout:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(databricks bundle validate:*)",
+      "Bash(curl:*)",
+      "Bash(unzip:*)",
+      "Bash(export PATH=\"$HOME/.databricks/cli/bin:$PATH\")",
+      "Bash(databricks:*)"
     ],
     "deny": []
   }
