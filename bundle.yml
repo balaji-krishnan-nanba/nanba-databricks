@@ -12,28 +12,28 @@ variables:
     custom_tags:
       ResourceClass: SingleNode
 
-workspace:
-  host: ${var.databricks_host}
-
 targets:
   dev:
     default: true
+    workspace:
+      host: https://adb-1591171967825930.10.azuredatabricks.net
     variables:
-      databricks_host: https://adb-1591171967825930.10.azuredatabricks.net
       catalog_name: nanba_dev_bronze
       storage_account: stdlukdev
       key_vault: kv-dev-dbws
     
   test:
+    workspace:
+      host: https://adb-4303682729475323.3.azuredatabricks.net
     variables:
-      databricks_host: https://adb-4303682729475323.3.azuredatabricks.net
       catalog_name: nanba_test_silver
       storage_account: stdluktest
       key_vault: kv-test-dbws
     
   prod:
+    workspace:
+      host: https://adb-3093184951454180.0.azuredatabricks.net
     variables:
-      databricks_host: https://adb-3093184951454180.0.azuredatabricks.net
       catalog_name: nanba_prod_gold
       storage_account: stdlukprod
       key_vault: kv-prod-dbws
