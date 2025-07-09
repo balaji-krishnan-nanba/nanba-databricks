@@ -20,7 +20,8 @@
       "Bash(curl:*)",
       "Bash(unzip:*)",
       "Bash(export PATH=\"$HOME/.databricks/cli/bin:$PATH\")",
-      "Bash(databricks:*)"
+      "Bash(databricks:*)",
+      "Bash(gh run list:*)"
     ],
     "deny": []
   }

@@ -40,15 +40,9 @@ jobs:
               "tenantId": "${{ secrets.ARM_TENANT_ID }}"
             }
       
-      - name: Configure Databricks Auth
-        run: |
-          echo "Using Azure CLI authentication"
-      
       - name: Deploy to Dev
         env:
           DATABRICKS_HOST: https://adb-1591171967825930.10.azuredatabricks.net
-          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          DATABRICKS_AUTH_TYPE: azure-cli
         run: |
           databricks bundle deploy --target dev
