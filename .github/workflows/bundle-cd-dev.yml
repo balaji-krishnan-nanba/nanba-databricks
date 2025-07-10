@@ -1,19 +1,18 @@
-name: Bundle CD - Dev
+name: DEV CD Pipeline
 
 on:
-  push:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
     branches:
       - main
-    paths:
-      - 'src/**'
-      - 'bundle.yml'
-      - 'iac/**'
-      - '.github/workflows/bundle-cd-dev.yml'
 
 jobs:
   deploy-dev:
     runs-on: ubuntu-latest
     environment: dev
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     
     steps:
       - name: Checkout code

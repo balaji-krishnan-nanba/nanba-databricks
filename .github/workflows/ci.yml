@@ -1,26 +1,17 @@
-name: TEST CD Pipeline
+name: CI Pipeline
 
 on:
-  workflow_run:
-    workflows: ["DEV CD Pipeline"]
-    types:
-      - completed
-    branches:
-      - main
-  workflow_dispatch:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  deploy-test:
+  validate:
     runs-on: ubuntu-latest
-    environment: 
-      name: test
-      url: https://adb-4303682729475323.3.azuredatabricks.net
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    name: Validate Bundle
     
     steps:
-      - name: Manual Approval Required
-        run: echo "This deployment requires manual approval from Balaji-Krishnan-Nanba"
-      
       - name: Checkout code
         uses: actions/checkout@v4
       
@@ -45,21 +36,33 @@ jobs:
               "tenantId": "${{ secrets.ARM_TENANT_ID }}"
             }
       
-      - name: Deploy to Test
+      - name: Validate Bundle - Dev
         env:
-          DATABRICKS_HOST: https://adb-4303682729475323.3.azuredatabricks.net
+          DATABRICKS_HOST: https://adb-1591171967825930.10.azuredatabricks.net
           DATABRICKS_AUTH_TYPE: azure-cli
         run: |
-          databricks bundle deploy --target test
+          databricks bundle validate --target dev
       
-      - name: Run ELT Pipeline
+      - name: Validate Bundle - Test
         env:
           DATABRICKS_HOST: https://adb-4303682729475323.3.azuredatabricks.net
           DATABRICKS_AUTH_TYPE: azure-cli
         run: |
-          # Get job ID and start the ELT pipeline
-          JOB_ID=$(databricks jobs list --output json | jq -r '.[] | select(.settings.name | contains("ELT Demo Pipeline")) | .job_id')
-          echo "Starting job ID: $JOB_ID"
-          
-          # Wait for completion with timeout
-          databricks jobs run-now $JOB_ID --timeout 20m
+          databricks bundle validate --target test
+      
+      - name: Validate Bundle - Prod
+        env:
+          DATABRICKS_HOST: https://adb-3093184951454180.0.azuredatabricks.net
+          DATABRICKS_AUTH_TYPE: azure-cli
+        run: |
+          databricks bundle validate --target prod
+      
+      - name: Lint Python files
+        run: |
+          pip install ruff
+          ruff check src/notebooks/ || true  # Allow warnings for now
+      
+      - name: CI Success
+        run: |
+          echo "✅ CI Pipeline completed successfully"
+          echo "Ready for deployment to DEV environment"
