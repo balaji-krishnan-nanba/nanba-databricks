@@ -40,7 +40,11 @@
       "Bash(DATABRICKS_HOST=https://adb-3093184951454180.0.azuredatabricks.net databricks jobs list)",
       "Bash(DATABRICKS_HOST=https://adb-3093184951454180.0.azuredatabricks.net databricks jobs run-now 944364223396040 --no-wait)",
       "Bash(DATABRICKS_HOST=https://adb-4303682729475323.3.azuredatabricks.net databricks jobs get-run 658651995608436 --output json)",
-      "Bash(DATABRICKS_HOST=https://adb-3093184951454180.0.azuredatabricks.net databricks jobs get-run 262079620908688 --output json)"
+      "Bash(DATABRICKS_HOST=https://adb-3093184951454180.0.azuredatabricks.net databricks jobs get-run 262079620908688 --output json)",
+      "Bash(DATABRICKS_HOST=https://adb-1591171967825930.10.azuredatabricks.net databricks jobs list-runs --job-id 944364223396040 --limit 3)",
+      "Bash(DATABRICKS_HOST=https://adb-1591171967825930.10.azuredatabricks.net databricks jobs get-run 177397698035169 --output json)",
+      "Bash(DATABRICKS_HOST=https://adb-1591171967825930.10.azuredatabricks.net databricks jobs list-runs --job-id 944364223396040 --limit 10)",
+      "Bash(DATABRICKS_HOST=https://adb-1591171967825930.10.azuredatabricks.net databricks jobs get-run 658651995608436 --output json)"
     ],
     "deny": []
   }
