@@ -1,0 +1,18 @@
+# Global code owners
+* @balaji-krishnan-nanba
+
+# Bundle configuration requires platform team approval
+bundle.yml @balaji-krishnan-nanba
+.github/workflows/ @balaji-krishnan-nanba
+
+# Infrastructure and deployment scripts
+scripts/ @balaji-krishnan-nanba
+*.sh @balaji-krishnan-nanba
+*.ps1 @balaji-krishnan-nanba
+
+# Databricks notebooks and source code
+src/ @balaji-krishnan-nanba
+
+# Documentation
+docs/ @balaji-krishnan-nanba
+README.md @balaji-krishnan-nanba

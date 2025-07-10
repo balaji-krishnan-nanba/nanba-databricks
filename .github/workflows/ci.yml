@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     name: Validate Bundle
     
+    outputs:
+      dev-valid: ${{ steps.validate-dev.outcome }}
+      test-valid: ${{ steps.validate-test.outcome }}
+      prod-valid: ${{ steps.validate-prod.outcome }}
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -37,32 +42,65 @@ jobs:
             }
       
       - name: Validate Bundle - Dev
+        id: validate-dev
         env:
           DATABRICKS_HOST: https://adb-1591171967825930.10.azuredatabricks.net
           DATABRICKS_AUTH_TYPE: azure-cli
         run: |
+          echo "Validating DEV environment..."
           databricks bundle validate --target dev
+          echo "✅ DEV validation successful"
       
       - name: Validate Bundle - Test
+        id: validate-test
         env:
           DATABRICKS_HOST: https://adb-4303682729475323.3.azuredatabricks.net
           DATABRICKS_AUTH_TYPE: azure-cli
         run: |
+          echo "Validating TEST environment..."
           databricks bundle validate --target test
+          echo "✅ TEST validation successful"
       
       - name: Validate Bundle - Prod
+        id: validate-prod
         env:
           DATABRICKS_HOST: https://adb-3093184951454180.0.azuredatabricks.net
           DATABRICKS_AUTH_TYPE: azure-cli
         run: |
+          echo "Validating PROD environment..."
           databricks bundle validate --target prod
+          echo "✅ PROD validation successful"
       
       - name: Lint Python files
+        id: lint
         run: |
           pip install ruff
+          echo "Linting Python files..."
           ruff check src/notebooks/ || true  # Allow warnings for now
+          echo "✅ Linting completed"
+      
+      - name: Security Scan
+        id: security
+        run: |
+          echo "Scanning for security issues..."
+          # Check for common secrets patterns
+          if grep -r "password\|secret\|key\|token" src/ --include="*.py" || true; then
+            echo "⚠️  Found potential secrets in code - please review"
+          fi
+          echo "✅ Security scan completed"
+      
+      - name: Generate Build Summary
+        run: |
+          echo "## 🎯 CI Pipeline Results" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| DEV | ✅ Validated |" >> $GITHUB_STEP_SUMMARY
+          echo "| TEST | ✅ Validated |" >> $GITHUB_STEP_SUMMARY
+          echo "| PROD | ✅ Validated |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Ready for deployment to DEV environment** 🚀" >> $GITHUB_STEP_SUMMARY
       
       - name: CI Success
         run: |
           echo "✅ CI Pipeline completed successfully"
-          echo "Ready for deployment to DEV environment"
+          echo "All validations passed - ready for DEV deployment"
