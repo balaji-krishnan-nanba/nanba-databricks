@@ -65,19 +65,17 @@ resources:
             spark_version: ${var.spark_version}
             node_type_id: ${var.node_type_id}
             num_workers: 2
-            cluster_name: "elt-demo-cluster-${bundle.target}"
-            data_security_mode: SINGLE_USER
-            single_user_name: ${workspace.current_user.userName}
+            data_security_mode: USER_ISOLATION
       
       tasks:
         - task_key: bootstrap_unity_catalog
           description: "Initialize Unity Catalog structures"
           job_cluster_key: elt_cluster
           notebook_task:
-            notebook_path: ${workspace.file_path}/src/notebooks/bootstrap_uc.py
+            notebook_path: ${workspace.file_path}/src/notebooks/bootstrap_uc
             base_parameters:
               environment: ${bundle.target}
-          timeout_seconds: 600
+          timeout_seconds: 1800
           
         - task_key: run_elt_pipeline
           description: "Execute ELT transformation pipeline"
@@ -85,13 +83,11 @@ resources:
             - task_key: bootstrap_unity_catalog
           job_cluster_key: elt_cluster
           notebook_task:
-            notebook_path: ${workspace.file_path}/src/notebooks/elt_demo.py
+            notebook_path: ${workspace.file_path}/src/notebooks/elt_demo
             base_parameters:
               environment: ${bundle.target}
           timeout_seconds: 1800
       
-      run_as:
-        user_name: ${workspace.current_user.userName}
 
   clusters:
     interactive_cluster:
@@ -100,5 +96,4 @@ resources:
       node_type_id: ${var.node_type_id}
       num_workers: 2
       autotermination_minutes: 120
-      data_security_mode: SINGLE_USER
-      single_user_name: ${workspace.current_user.userName}
+      data_security_mode: USER_ISOLATION

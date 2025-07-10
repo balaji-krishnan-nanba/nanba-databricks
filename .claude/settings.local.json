@@ -21,7 +21,26 @@
       "Bash(unzip:*)",
       "Bash(export PATH=\"$HOME/.databricks/cli/bin:$PATH\")",
       "Bash(databricks:*)",
-      "Bash(gh run list:*)"
+      "Bash(gh run list:*)",
+      "Bash(az account:*)",
+      "Bash(DATABRICKS_HOST=https://adb-1591171967825930.10.azuredatabricks.net databricks bundle deploy --target dev)",
+      "Bash(DATABRICKS_HOST=https://adb-1591171967825930.10.azuredatabricks.net databricks jobs run-now --job-name \"ELT Demo Pipeline - dev\")",
+      "Bash(DATABRICKS_HOST=https://adb-1591171967825930.10.azuredatabricks.net databricks jobs list)",
+      "Bash(DATABRICKS_HOST=https://adb-1591171967825930.10.azuredatabricks.net databricks jobs run-now 944364223396040)",
+      "Bash(DATABRICKS_HOST=https://adb-1591171967825930.10.azuredatabricks.net databricks workspace list /Workspace/Users/9fa6cb05-0e3e-4e1b-89fc-0ca732333d91/.bundle/nanba-databricks/dev/files/src/notebooks/)",
+      "Bash(DATABRICKS_HOST=https://adb-1591171967825930.10.azuredatabricks.net databricks jobs run-now 944364223396040 --no-wait)",
+      "Bash(DATABRICKS_HOST=https://adb-1591171967825930.10.azuredatabricks.net databricks jobs runs get 465000307778914)",
+      "Bash(DATABRICKS_HOST=https://adb-1591171967825930.10.azuredatabricks.net databricks jobs get-run 465000307778914)",
+      "Bash(DATABRICKS_HOST=https://adb-1591171967825930.10.azuredatabricks.net databricks jobs get-run 465000307778914 --output json)",
+      "Bash(DATABRICKS_HOST=https://adb-4303682729475323.3.azuredatabricks.net databricks bundle deploy --target test)",
+      "Bash(DATABRICKS_HOST=https://adb-4303682729475323.3.azuredatabricks.net databricks jobs list)",
+      "Bash(DATABRICKS_HOST=https://adb-4303682729475323.3.azuredatabricks.net databricks jobs list --output json)",
+      "Bash(DATABRICKS_HOST=https://adb-4303682729475323.3.azuredatabricks.net databricks jobs run-now 944364223396040 --no-wait)",
+      "Bash(DATABRICKS_HOST=https://adb-3093184951454180.0.azuredatabricks.net databricks bundle deploy --target prod)",
+      "Bash(DATABRICKS_HOST=https://adb-3093184951454180.0.azuredatabricks.net databricks jobs list)",
+      "Bash(DATABRICKS_HOST=https://adb-3093184951454180.0.azuredatabricks.net databricks jobs run-now 944364223396040 --no-wait)",
+      "Bash(DATABRICKS_HOST=https://adb-4303682729475323.3.azuredatabricks.net databricks jobs get-run 658651995608436 --output json)",
+      "Bash(DATABRICKS_HOST=https://adb-3093184951454180.0.azuredatabricks.net databricks jobs get-run 262079620908688 --output json)"
     ],
     "deny": []
   }
